@@ -29,8 +29,12 @@ class BalanceSuite extends FunSuite {
     assert(!balance(":-)".toList))
   }
 
-  test("balance: '())(' counting is not enough") {
+  test("balance: '())(' counting is not enough: rigth parenthesis") {
     assert(!balance("())(".toList))
+  }
+
+  test("balance: '()(()' counting is not enough: left parenthesis") {
+    assert(!balance("()(()".toList))
   }
 
   test("balance: '()()' is balanced") {

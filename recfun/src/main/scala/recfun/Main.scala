@@ -30,7 +30,7 @@ object Main {
     else {
       def countPars(chars: List[Char], openPars: Int): Boolean = {
         if (chars.isEmpty) {
-          true
+          openPars == 0
         } else {
           val h = chars.head
           val n = {
