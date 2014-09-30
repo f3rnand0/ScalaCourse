@@ -77,6 +77,8 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s4 = singletonSet(-1)
+    val s5 = singletonSet(0)
   }
 
   /**
@@ -86,7 +88,7 @@ class FunSetSuite extends FunSuite {
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
-  ignore("singletonSet(1) contains 1") {
+  test("singletonSet(1) contains 1") {
     
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -101,12 +103,55 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  ignore("union contains all elements") {
+  test("union contains all elements") {
     new TestSets {
       val s = union(s1, s2)
-      assert(contains(s, 1), "Union 1")
-      assert(contains(s, 2), "Union 2")
-      assert(!contains(s, 3), "Union 3")
+      assert(contains(s, 1), "Union 1 - Different elements")
+      assert(contains(s, 2), "Union 2 - Different elements")
+      assert(!contains(s, 3), "Union 3 - Different elements")
+      
+      val t = union(s1, s1)
+      assert(contains(t, 1), "Union 1 - Same elements")
+      assert(!contains(t, 2), "Union 2 - Same elements")
+      
+      val u = union(union(s1, s2), s4)
+      assert(contains(u, 1), "Union 1 - Sets different size")
+      assert(contains(u, 2), "Union 2 - Sets different size")
+      assert(contains(u, -1), "Union 3 - Sets different size")
+      assert(!contains(u, 3), "Union 4 - Sets different size")
+    }
+  }
+  
+  test("intersect contains only similar elements") {
+    new TestSets {
+      val s = intersect(s1, s2)
+      assert(!contains(s, 1), "Intersect 1 - Different elements")
+      assert(!contains(s, 2), "Intersect 2 - Different elements")
+      
+      val t = intersect(s1, s1)
+      assert(contains(t, 1), "Intersect 1 - Same elements")
+      assert(!contains(t, 2), "Intersect 2 - Same elements")
+      
+      val u = intersect(union(s1, s2), s2)
+      assert(!contains(u, 1), "Intersect 1 - Same elements, sets different size")
+      assert(contains(u, 2), "Intersect 2 - Same elements, sets different size")
+    }
+  }
+  
+  test("diff contains only elements from first set") {
+    new TestSets {
+      val s = diff(s1, s2)
+      assert(contains(s, 1), "Diff 1 - Different elements")
+      assert(contains(s, 2), "Diff 2 - Different elements")
+      
+      val t = diff(s1, s1)
+      assert(!contains(t, 1), "Diff 1 - Same elements")
+      assert(!contains(t, 2), "Diff 2 - Same elements")
+      
+      val u = diff(union(union(s1, s2), s5), s1)
+      assert(contains(u, 0), "Diff 1 - Same elements, sets different size")
+      assert(!contains(u, 1), "Diff 1 - Same elements, sets different size")
+      assert(contains(u, 2), "Diff 2 - Same elements, sets different size")
     }
   }
 }
