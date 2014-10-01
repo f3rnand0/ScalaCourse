@@ -79,6 +79,18 @@ class FunSetSuite extends FunSuite {
     val s3 = singletonSet(3)
     val s4 = singletonSet(-1)
     val s5 = singletonSet(0)
+    val s6 = singletonSet(500)
+    val s7 = singletonSet(-1001)
+    val s8 = singletonSet(1001)
+    val s9 = union(union(s1, s2), s7)
+    val s10 = union(union(union(s3, s4), s5), s8)
+    val s11 = union(union(s1, s2), s6)
+    
+    val p1 = (x : Int) => x < 0
+    val p2 = (x : Int) => x > 0 && x < 2
+    val p3 = (x : Int) => x >= 3
+    val p4 = (x : Int) => x >= 300 && x <= 550
+    val p5 = (x : Int) => x >= -300 && x <= 500
   }
 
   /**
@@ -152,6 +164,45 @@ class FunSetSuite extends FunSuite {
       assert(contains(u, 0), "Diff 1 - Same elements, sets different size")
       assert(!contains(u, 1), "Diff 1 - Same elements, sets different size")
       assert(contains(u, 2), "Diff 2 - Same elements, sets different size")
+    }
+  }
+  
+  test("filter contains a subset of the first set") {
+    new TestSets {
+      val s = filter(s4, p1)
+      assert(!contains(s, -2), "Filter 1 - Elements less than 0")
+      assert(contains(s, -1), "Filter 2 - Elements less than 0")
+      
+      val t = filter(s1, p2)
+      assert(contains(t, 1), "Filter 1 - Only elements equal to 1")
+      assert(!contains(t, 2), "Filter 2 - Only elements equal to 1")
+      
+      val u = filter(s3, p3)
+      assert(contains(u, 3), "Filter 1 - Elements equal to or greater than 3")
+      assert(!contains(u, 4), "Filter 2 - Elements equal to or greater than 3")
+    }
+  }
+  
+  test("forall test if a given predicate is true for all elements, using bounds to limit the search space") {
+    new TestSets {
+      val s = forall(s9, p1)
+      assert(!s, "ForAll 1 - Set with negative elements outside the bounds, Predicate: only negative numbers")
+      
+      val t = forall(s9, p4)
+      assert(!t, "ForAll 2 - Set with negative elements outside the bounds, Predicate: only numbers between 300 and 550")
+      
+      val u = forall(s10, p3)
+      assert(!u, "ForAll 3 - Set with positive elements outside the bounds, Predicate: only numbers equal to or greater than 3")
+      
+      val v = forall(s10, p5)
+      assert(v, "ForAll 4 - Set with positive elements outside the bounds, Predicate: only numbers between -300 and 500")
+
+      val w = forall(s11, p4)
+      assert(!w, "ForAll 5 - Set with all elements within the bounds, Predicate: only numbers between 300 and 550")
+
+      val x = forall(s11, p5)
+      assert(x, "ForAll 6 - Set with all elements within the bounds, Predicate: only numbers between -300 and 500")
+
     }
   }
 }
