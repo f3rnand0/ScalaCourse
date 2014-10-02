@@ -157,7 +157,7 @@ class FunSetSuite extends FunSuite {
     new TestSets {
       val s = diff(s1, s2)
       assert(contains(s, 1), "Diff 1 - Different elements")
-      assert(contains(s, 2), "Diff 2 - Different elements")
+      assert(!contains(s, 2), "Diff 2 - Different elements")
 
       val t = diff(s1, s1)
       assert(!contains(t, 1), "Diff 1 - Same elements")
@@ -167,6 +167,11 @@ class FunSetSuite extends FunSuite {
       assert(contains(u, 0), "Diff 1 - Same elements, sets different size")
       assert(!contains(u, 1), "Diff 2 - Same elements, sets different size")
       assert(contains(u, 2), "Diff 3 - Same elements, sets different size")
+
+      val v = diff(s9, s11)
+      assert(contains(v, -1001), "Diff 1 - Different elements, sets equal size")
+      assert(!contains(v, 1), "Diff 2 - Different elements, sets equal size")
+      assert(!contains(v, 500), "Diff 3 - Different elements, sets equal size")
     }
   }
 
