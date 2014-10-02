@@ -5,6 +5,8 @@ import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
+import math.pow
+
 /**
  * This class is a test suite for the methods in object FunSets. To run
  * the test suite, you can either:
@@ -13,7 +15,6 @@ import org.scalatest.junit.JUnitRunner
  */
 @RunWith(classOf[JUnitRunner])
 class FunSetSuite extends FunSuite {
-
 
   /**
    * Link to the scaladoc - very clear and detailed tutorial of FunSuite
@@ -47,30 +48,29 @@ class FunSetSuite extends FunSuite {
     assert(1 + 2 === 3)
   }
 
-  
   import FunSets._
 
   test("contains is implemented") {
     assert(contains(x => true, 100))
   }
-  
+
   /**
    * When writing tests, one would often like to re-use certain values for multiple
    * tests. For instance, we would like to create an Int-set and have multiple test
    * about it.
-   * 
+   *
    * Instead of copy-pasting the code for creating the set into every test, we can
    * store it in the test class using a val:
-   * 
+   *
    *   val s1 = singletonSet(1)
-   * 
+   *
    * However, what happens if the method "singletonSet" has a bug and crashes? Then
    * the test methods are not even executed, because creating an instance of the
    * test class fails!
-   * 
+   *
    * Therefore, we put the shared values into a separate trait (traits are like
    * abstract classes), and create an instance inside each test method.
-   * 
+   *
    */
 
   trait TestSets {
@@ -85,26 +85,29 @@ class FunSetSuite extends FunSuite {
     val s9 = union(union(s1, s2), s7)
     val s10 = union(union(union(s3, s4), s5), s8)
     val s11 = union(union(s1, s2), s6)
-    
-    val p1 = (x : Int) => x < 0
-    val p2 = (x : Int) => x > 0 && x < 2
-    val p3 = (x : Int) => x >= 3
-    val p4 = (x : Int) => x >= 300 && x <= 550
-    val p5 = (x : Int) => x >= -300 && x <= 500
+
+    val p1 = (x: Int) => x < 0
+    val p2 = (x: Int) => x > 0 && x < 2
+    val p3 = (x: Int) => x >= 3
+    val p4 = (x: Int) => x >= 300 && x <= 550
+    val p5 = (x: Int) => x >= -300 && x <= 500
+
+    val f1 = (x: Int) => x * x
+    val f2 = (x: Int) => pow(x, 3).toInt
   }
 
   /**
    * This test is currently disabled (by using "ignore") because the method
    * "singletonSet" is not yet implemented and the test would fail.
-   * 
+   *
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
   test("singletonSet(1) contains 1") {
-    
+
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
-     * to the values "s1" to "s3". 
+     * to the values "s1" to "s3".
      */
     new TestSets {
       /**
@@ -115,17 +118,17 @@ class FunSetSuite extends FunSuite {
     }
   }
 
-  test("union contains all elements") {
+  test("union: contains all elements") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1 - Different elements")
       assert(contains(s, 2), "Union 2 - Different elements")
       assert(!contains(s, 3), "Union 3 - Different elements")
-      
+
       val t = union(s1, s1)
       assert(contains(t, 1), "Union 1 - Same elements")
       assert(!contains(t, 2), "Union 2 - Same elements")
-      
+
       val u = union(union(s1, s2), s4)
       assert(contains(u, 1), "Union 1 - Sets different size")
       assert(contains(u, 2), "Union 2 - Sets different size")
@@ -133,67 +136,67 @@ class FunSetSuite extends FunSuite {
       assert(!contains(u, 3), "Union 4 - Sets different size")
     }
   }
-  
-  test("intersect contains only similar elements") {
+
+  test("intersect: contains only similar elements") {
     new TestSets {
       val s = intersect(s1, s2)
       assert(!contains(s, 1), "Intersect 1 - Different elements")
       assert(!contains(s, 2), "Intersect 2 - Different elements")
-      
+
       val t = intersect(s1, s1)
       assert(contains(t, 1), "Intersect 1 - Same elements")
       assert(!contains(t, 2), "Intersect 2 - Same elements")
-      
+
       val u = intersect(union(s1, s2), s2)
       assert(!contains(u, 1), "Intersect 1 - Same elements, sets different size")
       assert(contains(u, 2), "Intersect 2 - Same elements, sets different size")
     }
   }
-  
-  test("diff contains only elements from first set") {
+
+  test("diff: contains only elements from first set") {
     new TestSets {
       val s = diff(s1, s2)
       assert(contains(s, 1), "Diff 1 - Different elements")
       assert(contains(s, 2), "Diff 2 - Different elements")
-      
+
       val t = diff(s1, s1)
       assert(!contains(t, 1), "Diff 1 - Same elements")
       assert(!contains(t, 2), "Diff 2 - Same elements")
-      
+
       val u = diff(union(union(s1, s2), s5), s1)
       assert(contains(u, 0), "Diff 1 - Same elements, sets different size")
-      assert(!contains(u, 1), "Diff 1 - Same elements, sets different size")
-      assert(contains(u, 2), "Diff 2 - Same elements, sets different size")
+      assert(!contains(u, 1), "Diff 2 - Same elements, sets different size")
+      assert(contains(u, 2), "Diff 3 - Same elements, sets different size")
     }
   }
-  
-  test("filter contains a subset of the first set") {
+
+  test("filter: contains a subset of the first set") {
     new TestSets {
       val s = filter(s4, p1)
       assert(!contains(s, -2), "Filter 1 - Elements less than 0")
       assert(contains(s, -1), "Filter 2 - Elements less than 0")
-      
+
       val t = filter(s1, p2)
       assert(contains(t, 1), "Filter 1 - Only elements equal to 1")
       assert(!contains(t, 2), "Filter 2 - Only elements equal to 1")
-      
+
       val u = filter(s3, p3)
       assert(contains(u, 3), "Filter 1 - Elements equal to or greater than 3")
       assert(!contains(u, 4), "Filter 2 - Elements equal to or greater than 3")
     }
   }
-  
-  test("forall test if a given predicate is true for all elements, using bounds to limit the search space") {
+
+  test("forall: all bounded integers within a set satisfy a predicate") {
     new TestSets {
       val s = forall(s9, p1)
       assert(!s, "ForAll 1 - Set with negative elements outside the bounds, Predicate: only negative numbers")
-      
+
       val t = forall(s9, p4)
       assert(!t, "ForAll 2 - Set with negative elements outside the bounds, Predicate: only numbers between 300 and 550")
-      
+
       val u = forall(s10, p3)
       assert(!u, "ForAll 3 - Set with positive elements outside the bounds, Predicate: only numbers equal to or greater than 3")
-      
+
       val v = forall(s10, p5)
       assert(v, "ForAll 4 - Set with positive elements outside the bounds, Predicate: only numbers between -300 and 500")
 
@@ -202,6 +205,41 @@ class FunSetSuite extends FunSuite {
 
       val x = forall(s11, p5)
       assert(x, "ForAll 6 - Set with all elements within the bounds, Predicate: only numbers between -300 and 500")
+
+    }
+  }
+
+  test("exists: at least a bounded integer within a set satisfy a predicate") {
+    new TestSets {
+      val s = exists(s9, p2)
+      assert(s, "Exists 1 - Set with negative elements outside the bounds, Predicate: only number 1")
+
+      val t = exists(s9, p4)
+      assert(!t, "Exists 2 - Set with negative elements outside the bounds, Predicate: only numbers between 300 and 550")
+
+      val u = exists(s10, p5)
+      assert(u, "Exists 3 - Set with positive elements outside the bounds, Predicate: only numbers between -300 and 500")
+
+      val v = exists(s11, p4)
+      assert(v, "Exists 4 - Set with positive elements within the bounds, Predicate: only numbers between 300 and 550")
+
+      val w = exists(s11, p5)
+      assert(w, "Exists 5 - Set with all elements within the bounds, Predicate: only numbers between -300 and 500")
+
+    }
+  }
+
+  test("map: a set transformed by applying a function to each element of a set") {
+    new TestSets {
+      val s = map(s9, f1)
+      assert(contains(s, 1), "Map 1 - apply 'x * x' to each item of the set")
+      assert(!contains(s, -4), "Map 2 - apply 'x * x' to each item of the set")
+      assert(contains(s, 4), "Map 3 - apply 'x * x' to each item of the set")
+
+      val t = map(s11, f2)
+      assert(contains(t, 8), "Map 1 - apply 'pow(x, 3)' to each item of the set")
+      assert(contains(t, 125000000), "Map 2 - apply 'pow(x, 3)' to each item of the set")
+      assert(!contains(t, 4), "Map 3 - apply 'pow(x, 3)' to each item of the set")
 
     }
   }
